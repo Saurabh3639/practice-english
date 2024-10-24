@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+cd practice-english
+npx create-next-app@latest .
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Dependencies
+```bash
+npm install @google/generative-ai
+```
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+## .env file
+```bash
+NEXT_PUBLIC_GEMINI_API_KEY = ""
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## AI Integration (Google Gemini)
 
-## Deploy on Vercel
+### Google Gemini API Setup
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+(1) Visit
+```bash
+https://ai.google.dev/
+```
+(2) Sign In => Get API key in Google AI Studio
+(3) Create API key => Create API key for new project
+(4) Copy/Paste API key in .env (NEXT_PUBLIC_GEMINI_API_KEY)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+### Code setup
+
+Dependency -
+```bash
+npm install @google/generative-ai
+```
+
+utility/GeminiAIModal.js -
+```bash
+const {
+  GoogleGenerativeAI,
+  HarmCategory,
+  HarmBlockThreshold, } = require("@google/generative-ai");
+
+const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(apiKey);
+
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+});
+
+const generationConfig = {
+  temperature: 1,
+  topP: 0.95,
+  topK: 64,
+  maxOutputTokens: 8192,
+  responseMimeType: "text/plain",};
+
+const safetySettings = [
+  {
+    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+];
+
+export const chatSession = model.startChat({
+  generationConfig,
+  safetySettings,
+});
+```
+
+In Component Code -
+
+```bash
+import { chatSession } from "@/utility/GeminiAIModal";
+```
+
+```bash
+const InputPrompt = "Enter your prompt here...";
+const result = await chatSession.sendMessage(InputPrompt);
+const textResp = await result.response.text();
+console.log("textResp:", textResp);
+```
