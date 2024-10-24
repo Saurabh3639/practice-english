@@ -32,7 +32,7 @@ export default function CorrectWord() {
   return (
     <>
       <div className="flex gap-4 items-center">
-        <h4>{gameName}</h4>
+        <h4 className="text-lg font-semibold">{gameName}</h4>
         <button
           onClick={onSubmit}
           className="border border-red-500 rounded-lg text-red-500 px-4 py-2 cursor-pointer"
@@ -47,7 +47,12 @@ export default function CorrectWord() {
             return (
               <div key={i}>
                 <p>{cval.question}</p>
-                <p>{cval.correctAnswer}</p>
+                <ol>
+                  {(cval.options).map((option, i) => {
+                    return <li key={i}> {i+1}. {option}</li>;
+                  })}
+                </ol>
+                <p className="text-green-500">{cval.correctAnswer}</p>
               </div>
             );
           })}
