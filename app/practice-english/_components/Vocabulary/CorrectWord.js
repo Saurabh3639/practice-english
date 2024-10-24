@@ -7,10 +7,13 @@ const gameName = "Choose the Correct Word";
 
 export default function CorrectWord() {
   const [data, setData] = useState(null);
+  const [selectedOptions, setSelectedOptions] = useState({});
+  const [score, setScore] = useState(0);
 
-  console.log("data:", data);
+  console.log("data:", JSON.stringify(data));
+  console.log("score:", score);
 
-  const onSubmit = async () => {
+  const onGenerate = async () => {
     const InputPrompt = `Please generate 10 multiple-choice questions for a ${gameName} game. Each question should be represented as a JSON object with the following structure:
     {
       "question": "The sentence with a blank space indicating a missing word.",
@@ -26,15 +29,46 @@ export default function CorrectWord() {
       .replace("```json", "")
       .replace("```", "");
     console.log("textResp:", textResp);
+
     setData(JSON.parse(textResp));
+
+    setScore(0); // Reset score when new questions are generated
+    setSelectedOptions({}); // Reset selected options
+  };
+
+  // Function to handle option click
+  const handleOptionClick = (questionIndex, selectedOption) => {
+    const correctAnswer = data[questionIndex].correctAnswer;
+
+    // Check if the question has already been answered
+    if (!selectedOptions[questionIndex]) {
+      // If the selected option is correct, increment the score
+      if (selectedOption === correctAnswer) {
+        setScore((prevScore) => prevScore + 1);
+      }
+
+      // Update the selected options with the user's selected option
+      setSelectedOptions((prev) => ({
+        ...prev,
+        [questionIndex]: {
+          selectedOption,
+          isCorrect: selectedOption === correctAnswer,
+        },
+      }));
+    }
   };
 
   return (
     <>
-      <div className="flex gap-4 items-center">
-        <h4 className="text-lg font-semibold">{gameName}</h4>
+      <div className="flex gap-4 items-center mb-4">
+        <h4 className="text-lg font-semibold">
+          {gameName}{" "}
+          <span>
+            [Score: {score} / {data?.length || 10}]
+          </span>
+        </h4>
         <button
-          onClick={onSubmit}
+          onClick={onGenerate}
           className="border border-red-500 rounded-lg text-red-500 px-4 py-2 cursor-pointer"
         >
           Generate
@@ -43,16 +77,39 @@ export default function CorrectWord() {
 
       <div>
         {data?.length > 0 &&
-          data?.map((cval, i) => {
+          data?.map((cval, questionIndex) => {
             return (
-              <div key={i}>
-                <p>{cval.question}</p>
+              <div key={questionIndex} className="mb-4">
+                <p>
+                  {questionIndex + 1}] {cval.question}
+                </p>
+
                 <ol>
-                  {(cval.options).map((option, i) => {
-                    return <li key={i}> {i+1}. {option}</li>;
+                  {cval.options.map((option, optionIndex) => {
+                    const isSelected =
+                      selectedOptions[questionIndex]?.selectedOption === option;
+                    const isCorrect = selectedOptions[questionIndex]?.isCorrect;
+
+                    // Determine the class based on whether the user selected the option and whether it's correct
+                    const selectedClass = isSelected
+                      ? isCorrect
+                        ? "text-green-500"
+                        : "text-red-500"
+                      : "";
+
+                    return (
+                      <li
+                        key={optionIndex}
+                        className={`cursor-pointer ${selectedClass}`}
+                        onClick={() => handleOptionClick(questionIndex, option)}
+                      >
+                        {optionIndex + 1}. {option}
+                      </li>
+                    );
                   })}
                 </ol>
-                <p className="text-green-500">{cval.correctAnswer}</p>
+
+                {/* <p className="text-green-500">{cval.correctAnswer}</p> */}
               </div>
             );
           })}
