@@ -98,12 +98,15 @@ export default function CorrectWord() {
                       : "";
 
                     return (
-                      <li
-                        key={optionIndex}
-                        className={`cursor-pointer ${selectedClass}`}
-                        onClick={() => handleOptionClick(questionIndex, option)}
-                      >
-                        {optionIndex + 1}. {option}
+                      <li key={optionIndex}>
+                        <span
+                          className={`cursor-pointer ${selectedClass}`}
+                          onClick={() =>
+                            handleOptionClick(questionIndex, option)
+                          }
+                        >
+                          {optionIndex + 1}. {option}
+                        </span>
                       </li>
                     );
                   })}
