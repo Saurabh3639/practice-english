@@ -9,7 +9,7 @@ import Link from "next/link";
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const basePath = pathname.split("/").pop();
+  const basePath = pathname.split("/")[1];
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 

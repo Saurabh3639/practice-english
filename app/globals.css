@@ -17,3 +17,26 @@
   border-right: 0.625rem solid #ed1c24;
   color: #ed1c24;
 }
+
+/* Responsive styles */
+@media screen and (max-width: 640px) {
+  .toggleSidebarBtn {
+    position: fixed;
+  }
+
+  .headerDiv {
+    flex-direction: column;
+  }
+
+  .headerOne {
+    /* display: none; */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .headerTwo {
+    display: none;
+    /* display: flex; */
+    /* flex-direction: column; */
+  }
+}
