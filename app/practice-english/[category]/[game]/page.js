@@ -22,12 +22,12 @@ export default function GamePage({ params }) {
             onClick={() => router.push(`${basePath}/${category}`)}
           />
           <span className="text-primary text-xl font-medium">
-            {game.replace(/-/g, " ")}
+            {game.replace(/-/g, " ").replace(/^\w/, (c) => c.toUpperCase())}
           </span>
         </div>
       </div>
 
-      <div>GamePage: {game}</div>
+      <div>GamePage: {game.replace(/-/g, " ")}</div>
     </div>
   );
 }
