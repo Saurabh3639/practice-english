@@ -1,122 +1,140 @@
 "use client";
 
-import { chatSession } from "@/utility/GeminiAIModal";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
-const gameName = "Choose the Correct Word";
+const data = [
+  {
+    question:
+      "The sun was shining brightly, and the birds were singing a cheerful _____.",
+    options: ["tune", "song", "melody", "rhythm"],
+    correctAnswer: "melody",
+  },
+  {
+    question: "The detective carefully examined the _____, looking for clues.",
+    options: ["evidence", "scene", "room", "location"],
+    correctAnswer: "evidence",
+  },
+  {
+    question: "The children were excited about the upcoming _____.",
+    options: ["celebration", "party", "festival", "event"],
+    correctAnswer: "party",
+  },
+  {
+    question: "The old man had a ____ of stories to tell.",
+    options: ["wealth", "collection", "variety", "treasure"],
+    correctAnswer: "wealth",
+  },
+  {
+    question: "The storm raged with ____ fury.",
+    options: ["unbelievable", "intense", "powerful", "ferocious"],
+    correctAnswer: "ferocious",
+  },
+  {
+    question: "The artist used a ____ of colors in her painting.",
+    options: ["palette", "range", "spectrum", "selection"],
+    correctAnswer: "palette",
+  },
+  {
+    question: "The doctor gave the patient a ____ examination.",
+    options: ["thorough", "complete", "detailed", "comprehensive"],
+    correctAnswer: "thorough",
+  },
+  {
+    question: "The students listened ____ to the professor's lecture.",
+    options: ["attentively", "carefully", "intently", "eagerly"],
+    correctAnswer: "attentively",
+  },
+  {
+    question: "The company's new product was a ____ success.",
+    options: ["huge", "grand", "massive", "tremendous"],
+    correctAnswer: "tremendous",
+  },
+  {
+    question: "The athlete's ____ was amazing.",
+    options: ["performance", "skill", "ability", "talent"],
+    correctAnswer: "performance",
+  },
+];
 
 export default function CorrectWord() {
-  const [data, setData] = useState(null);
-  const [selectedOptions, setSelectedOptions] = useState({});
-  const [score, setScore] = useState(0);
+  const router = useRouter();
 
-  console.log("data:", JSON.stringify(data));
-  console.log("score:", score);
+  const [index, setIndex] = useState(0); // Track the current question index
+  const [selectedOption, setSelectedOption] = useState(null); // Track selected option
+  const [userResp, setUserResp] = useState([]); // Store responses
 
-  const onGenerate = async () => {
-    const InputPrompt = `Please generate 10 multiple-choice questions for a ${gameName} game. Each question should be represented as a JSON object with the following structure:
-    {
-      "question": "The sentence with a blank space indicating a missing word.",
-      "options": ["Option A", "Option B", "Option C", "Option D"],
-      "correctAnswer": "The correct option from the options array (e.g., 'Option B')"
-    }
-    Provide the output as a JSON array containing these 10 question objects."
-    `;
+  const currentQuestion = data[index]; // Current question based on index
 
-    const result = await chatSession.sendMessage(InputPrompt);
-    const textResp = await result.response
-      .text()
-      .replace("```json", "")
-      .replace("```", "");
-    console.log("textResp:", textResp);
-
-    setData(JSON.parse(textResp));
-
-    setScore(0); // Reset score when new questions are generated
-    setSelectedOptions({}); // Reset selected options
+  const handleOptionClick = (option) => {
+    setSelectedOption(option); // Set selected option
   };
 
-  // Function to handle option click
-  const handleOptionClick = (questionIndex, selectedOption) => {
-    const correctAnswer = data[questionIndex].correctAnswer;
-
-    // Check if the question has already been answered
-    if (!selectedOptions[questionIndex]) {
-      // If the selected option is correct, increment the score
-      if (selectedOption === correctAnswer) {
-        setScore((prevScore) => prevScore + 1);
-      }
-
-      // Update the selected options with the user's selected option
-      setSelectedOptions((prev) => ({
+  const handleSubmit = () => {
+    if (selectedOption) {
+      // Update userResp with the current question and answer
+      setUserResp((prev) => [
         ...prev,
-        [questionIndex]: {
-          selectedOption,
-          isCorrect: selectedOption === correctAnswer,
+        {
+          question: currentQuestion.question,
+          options: currentQuestion.options,
+          correctAnswer: currentQuestion.correctAnswer,
+          userAnswer: selectedOption,
         },
-      }));
+      ]);
+
+      // Move to the next question and reset selectedOption
+      setIndex((prevIndex) => prevIndex + 1);
+      setSelectedOption(null);
     }
   };
+
+  useEffect(() => {
+    if (index >= data?.length) {
+      // router.push("/result"); // Navigate to the results page
+      console.log("userResp :", userResp);
+      // setIndex(0);
+    }
+  }, [index, userResp]); // Run when `index` changes
 
   return (
-    <>
-      <div className="flex gap-4 items-center mb-4">
-        <h4 className="text-lg font-semibold">
-          {gameName}{" "}
-          <span>
-            [Score: {score} / {data?.length || 10}]
-          </span>
-        </h4>
-        <button
-          onClick={onGenerate}
-          className="border border-red-500 rounded-lg text-red-500 px-4 py-2 cursor-pointer"
-        >
-          Generate
-        </button>
-      </div>
-
-      <div>
-        {data?.length > 0 &&
-          data?.map((cval, questionIndex) => {
-            return (
-              <div key={questionIndex} className="mb-4">
-                <p>
-                  {questionIndex + 1}] {cval.question}
-                </p>
-
-                <ol>
-                  {cval.options.map((option, optionIndex) => {
-                    const isSelected =
-                      selectedOptions[questionIndex]?.selectedOption === option;
-                    const isCorrect = selectedOptions[questionIndex]?.isCorrect;
-
-                    // Determine the class based on whether the user selected the option and whether it's correct
-                    const selectedClass = isSelected
-                      ? isCorrect
-                        ? "text-green-500"
-                        : "text-red-500"
-                      : "";
-
-                    return (
-                      <li key={optionIndex}>
-                        <span
-                          className={`cursor-pointer ${selectedClass}`}
-                          onClick={() =>
-                            handleOptionClick(questionIndex, option)
-                          }
-                        >
-                          {optionIndex + 1}. {option}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ol>
-
-                {/* <p className="text-green-500">{cval.correctAnswer}</p> */}
-              </div>
-            );
-          })}
-      </div>
-    </>
+    <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      {index < data?.length ? (
+        <div className="text-center">
+          <div className="bg-[#FFFDFA] min-w-[60vw] py-4 border shadow-md rounded-lg">
+            <h3 className="font-normal text-lg">
+              <span className="text-2xl">
+                Q {index + 1}
+                <span className="text-sm">/{data?.length}</span>{" "}
+              </span>
+              {currentQuestion?.question}
+            </h3>
+          </div>
+          <div className="my-8 grid grid-cols-2 gap-4">
+            {currentQuestion?.options.map((option, i) => {
+              return (
+                <div
+                  key={i}
+                  onClick={() => handleOptionClick(option)}
+                  className={`border-2 rounded-lg p-2 text-center text-lg font-normal ${
+                    selectedOption === option
+                      ? "text-primary border-primary"
+                      : "text-[#4C4C4C] border-[#FFD9DD]"
+                  }`}
+                >
+                  {option}
+                </div>
+              );
+            })}
+          </div>
+          <button
+            onClick={handleSubmit}
+            className="rounded-lg py-2 px-10 text-center bg-primary text-white"
+          >
+            Submit
+          </button>
+        </div>
+      ) : null}
+    </div>
   );
 }

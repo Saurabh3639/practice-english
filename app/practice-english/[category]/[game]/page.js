@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import React, { use } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import DailyVocab from "../../_components/Vocabulary/DailyVocab";
+import CorrectWord from "../../_components/Vocabulary/CorrectWord";
 
 export default function GamePage({ params }) {
   const router = useRouter();
@@ -28,10 +29,12 @@ export default function GamePage({ params }) {
         </div>
       </div>
 
-      {/* block 2 - load game component */}
+      {/* block 2 - Load game component */}
       <div>
         {game.replace(/-/g, " ") == "daily vocab" ? (
           <DailyVocab />
+        ) : game.replace(/-/g, " ") == "choose the correct word" ? (
+          <CorrectWord />
         ) : (
           <>No Game Component</>
         )}
