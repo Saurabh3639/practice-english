@@ -35,7 +35,7 @@ export default function Sidebar() {
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto scrollbar-hide shadow-lg">
-          <div className="flex items-center w-full px-3 py-3">
+          {/* <div className="flex items-center w-full px-3 py-3">
             <svg
               id="logo-34"
               width="40"
@@ -66,6 +66,16 @@ export default function Sidebar() {
               ></path>{" "}
             </svg>
             <span className="ml-6 text-lg font-bold">LOGO</span>
+          </div> */}
+          <div className="flex items-center w-full px-3 py-3">
+            <Image
+              src="/images/logo.svg"
+              height="38"
+              width="48"
+              alt="Felix-ITs"
+              priority={true}
+            />
+            <span className="ml-2 text-lg font-bold">Felix-ITs</span>
           </div>
           <div className="flex items-center p-2 space-x-4 border-t border-b">
             <Image
