@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import React, { use } from "react";
 import { IoArrowBack } from "react-icons/io5";
+import DailyVocab from "../../_components/Vocabulary/DailyVocab";
 
 export default function GamePage({ params }) {
   const router = useRouter();
@@ -27,7 +28,14 @@ export default function GamePage({ params }) {
         </div>
       </div>
 
-      <div>GamePage: {game.replace(/-/g, " ")}</div>
+      {/* block 2 - load game component */}
+      <div>
+        {game.replace(/-/g, " ") == "daily vocab" ? (
+          <DailyVocab />
+        ) : (
+          <>No Game Component</>
+        )}
+      </div>
     </div>
   );
 }
