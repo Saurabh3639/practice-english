@@ -3,62 +3,14 @@
 import { chatSession } from "@/utility/GeminiAIModal";
 import React, { useEffect, useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
+import { v4 as uuidv4 } from "uuid";
 
-const data = [
-  {
-    question:
-      "The sun was shining brightly, and the birds were singing a cheerful _____.",
-    options: ["tune", "song", "melody", "rhythm"],
-    correctAnswer: "melody",
-  },
-  {
-    question: "The detective carefully examined the _____, looking for clues.",
-    options: ["evidence", "scene", "room", "location"],
-    correctAnswer: "evidence",
-  },
-  {
-    question: "The children were excited about the upcoming _____.",
-    options: ["celebration", "party", "festival", "event"],
-    correctAnswer: "party",
-  },
-  {
-    question: "The old man had a ____ of stories to tell.",
-    options: ["wealth", "collection", "variety", "treasure"],
-    correctAnswer: "wealth",
-  },
-  {
-    question: "The storm raged with ____ fury.",
-    options: ["unbelievable", "intense", "powerful", "ferocious"],
-    correctAnswer: "ferocious",
-  },
-  {
-    question: "The artist used a ____ of colors in her painting.",
-    options: ["palette", "range", "spectrum", "selection"],
-    correctAnswer: "palette",
-  },
-  {
-    question: "The doctor gave the patient a ____ examination.",
-    options: ["thorough", "complete", "detailed", "comprehensive"],
-    correctAnswer: "thorough",
-  },
-  {
-    question: "The students listened ____ to the professor's lecture.",
-    options: ["attentively", "carefully", "intently", "eagerly"],
-    correctAnswer: "attentively",
-  },
-  {
-    question: "The company's new product was a ____ success.",
-    options: ["huge", "grand", "massive", "tremendous"],
-    correctAnswer: "tremendous",
-  },
-  {
-    question: "The athlete's ____ was amazing.",
-    options: ["performance", "skill", "ability", "talent"],
-    correctAnswer: "performance",
-  },
-];
+const category = "vocabulary";
+const gameName = "Choose the Correct Word";
+const totalQue = 10;
 
 export default function CorrectWord() {
+  const [data, setData] = useState(null);
   const [index, setIndex] = useState(0); // Track the current question index
   const [selectedOption, setSelectedOption] = useState(null); // Track selected option
   const [userResp, setUserResp] = useState([]); // Store responses
@@ -68,12 +20,36 @@ export default function CorrectWord() {
   });
   const [viewAnswers, setViewAnswers] = useState(false);
 
-  const currentQuestion = data[index]; // Current question based on index
+  const currentQuestion = data && data[index]; // Current question based on index
 
+  // To update selected option
   const handleOptionClick = (option) => {
     setSelectedOption(option); // Set selected option
   };
 
+  // Function to generate questions data for game
+  const onGenerate = async () => {
+    const InputPrompt = `Please generate 10 multiple-choice questions for a ${gameName} game. Each question should be represented as a JSON object with the following structure:
+    {
+      "question": "The sentence with a blank space indicating a missing word.",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswer": "The correct option from the options array (e.g., 'Option B')"
+    }
+    Provide the output as a JSON array containing these 10 question objects."
+    `;
+
+    const result = await chatSession.sendMessage(InputPrompt);
+    const textResp = await result.response
+      .text()
+      .replace("```json", "")
+      .replace("```", "");
+    // console.log("textResp:", textResp);
+    // console.log("textResp:", JSON.parse(textResp));
+
+    setData(JSON.parse(textResp));
+  };
+
+  // Function to update user response after submit
   const handleSubmit = () => {
     if (selectedOption) {
       // Update userResp with the current question and answer
@@ -93,8 +69,9 @@ export default function CorrectWord() {
     }
   };
 
+  // Function to generate feeback as per user response
   const onGenerateResult = async (score) => {
-    const overallPrompt = `In the Choose the correct word game, user's Total Score is ${score} out of 10. Based on this information. Provide overall feedback in short. Format the response as:
+    const overallPrompt = `In the ${gameName} game, user's Total Score is ${score} out of ${totalQue}. Based on this information. Provide overall feedback in short. Format the response as:
     { "feedback": "<feedback>",}`;
 
     try {
@@ -116,10 +93,20 @@ export default function CorrectWord() {
           feedback: aiFeedback?.feedback,
         }));
 
+        const dataToSubmit = {
+          gameName: gameName,
+          userResp: userResp,
+          mockId: uuidv4(), // Generate the new mockId here
+          score: score,
+          feedback: aiFeedback?.feedback,
+          category: category
+        };
+        console.log("dataToSubmit :", dataToSubmit);
+
         // Call your function to submit the report
-        // await submitReport(aiFeedback);
+        // await submitReport(dataToSubmit);
       } else {
-        console.log("No valid JSON data found.");
+        console.error("No valid JSON data found.");
       }
     } catch (error) {
       console.error("Error while generating:", error);
@@ -127,6 +114,8 @@ export default function CorrectWord() {
   };
 
   useEffect(() => {
+    onGenerate(); // Call onGenerate on component mount
+
     if (index >= data?.length) {
       // Calculate score based on user responses
       const totalScore = userResp.reduce((acc, curr) => {
@@ -144,109 +133,115 @@ export default function CorrectWord() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh]">
-      {index < data?.length ? (
-        <div className="text-center">
-          <div className="bg-[#FFFDFA] min-w-[60vw] py-4 border shadow-md rounded-lg">
-            <h3 className="font-normal text-lg">
-              <span className="text-2xl">
-                Q {index + 1}
-                <span className="text-sm">/{data?.length}</span>{" "}
-              </span>
-              {currentQuestion?.question}
-            </h3>
-          </div>
-          <div className="my-8 grid grid-cols-2 gap-4">
-            {currentQuestion?.options.map((option, i) => {
-              return (
-                <div
-                  key={i}
-                  onClick={() => handleOptionClick(option)}
-                  className={`border-2 rounded-lg p-2 text-center text-lg font-normal ${
-                    selectedOption === option
-                      ? "text-primary border-primary"
-                      : "text-[#4C4C4C] border-[#FFD9DD]"
-                  }`}
-                >
-                  {option}
-                </div>
-              );
-            })}
-          </div>
-          <button
-            onClick={handleSubmit}
-            className="rounded-lg py-2 px-10 text-center bg-primary text-white"
-          >
-            Submit
-          </button>
-        </div>
+      {data == null ? (
+        <>Loading...</>
       ) : (
         <>
-          {result ? (
-            <div className="bg-[#FFFDFA] border shadow-lg h-[480px] w-[500px] rounded-lg py-4 px-8 flex flex-col items-center justify-evenly overflow-clip scrollbar-hide">
-              <div className="w-fit text-3xl font-normal text-center">
-                Score : {result?.score || 0}/10
+          {index < data?.length ? (
+            <div className="text-center">
+              <div className="bg-[#FFFDFA] min-w-[60vw] py-4 border shadow-md rounded-lg">
+                <h3 className="font-normal text-lg">
+                  <span className="text-2xl">
+                    Q {index + 1}
+                    <span className="text-sm">/{data?.length}</span>{" "}
+                  </span>
+                  {currentQuestion?.question}
+                </h3>
               </div>
-              <p className="text-lg font-normal text-center">
-                {result?.feedback || "Loading..."}
-              </p>
+              <div className="my-8 grid grid-cols-2 gap-4">
+                {currentQuestion?.options.map((option, i) => {
+                  return (
+                    <div
+                      key={i}
+                      onClick={() => handleOptionClick(option)}
+                      className={`border-2 rounded-lg p-2 text-center text-lg font-normal ${
+                        selectedOption === option
+                          ? "text-primary border-primary"
+                          : "text-[#4C4C4C] border-[#FFD9DD]"
+                      }`}
+                    >
+                      {option}
+                    </div>
+                  );
+                })}
+              </div>
               <button
-                onClick={() => setViewAnswers(true)}
-                className="px-4 py-2 bg-primary text-white text-base font-medium rounded-lg"
+                onClick={handleSubmit}
+                className="rounded-lg py-2 px-10 text-center bg-primary text-white"
               >
-                View your answers
+                Submit
               </button>
             </div>
           ) : (
-            "Loading..."
-          )}
+            <>
+              {result ? (
+                <div className="bg-[#FFFDFA] border shadow-lg h-[480px] w-[500px] rounded-lg py-4 px-8 flex flex-col items-center justify-evenly overflow-clip scrollbar-hide">
+                  <div className="w-fit text-3xl font-normal text-center">
+                    Score : {result?.score || 0}/10
+                  </div>
+                  <p className="text-lg font-normal text-center">
+                    {result?.feedback || "Loading..."}
+                  </p>
+                  <button
+                    onClick={() => setViewAnswers(true)}
+                    className="px-4 py-2 bg-primary text-white text-base font-medium rounded-lg"
+                  >
+                    View your answers
+                  </button>
+                </div>
+              ) : (
+                "Loading..."
+              )}
 
-          {/* View Answer pop up */}
-          {viewAnswers && (
-            <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-700 bg-opacity-50 z-50">
-              <div className="bg-white p-6 rounded-md h-[90vh] min-w-[50vw] overflow-scroll scrollbar-hide">
-                <div className="flex items-center gap-4 mb-4 text-2xl">
-                  <IoArrowBack
-                    className="cursor-pointer"
-                    onClick={() => setViewAnswers(false)}
-                  />
-                  <span className="text-primary">Your answers</span>
+              {/* View Answer pop up */}
+              {viewAnswers && (
+                <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-700 bg-opacity-50 z-50">
+                  <div className="bg-white p-6 rounded-md h-[90vh] min-w-[50vw] overflow-scroll scrollbar-hide">
+                    <div className="flex items-center gap-4 mb-4 text-2xl">
+                      <IoArrowBack
+                        className="cursor-pointer"
+                        onClick={() => setViewAnswers(false)}
+                      />
+                      <span className="text-primary">Your answers</span>
+                    </div>
+                    <div className="px-6 space-y-8">
+                      {userResp?.length > 0 &&
+                        userResp?.map((cval, index) => (
+                          <div key={index} className="space-y-4">
+                            <p className="text-lg text-[#414141] font-medium">
+                              {index + 1}. {cval.question}
+                            </p>
+                            <div className="ms-8">
+                              <h4 className="text-lg text-primary font-medium py-1">
+                                Options
+                              </h4>
+                              <p className="text-base text-[#414141] font-medium">
+                                {cval.options.join(", ")}
+                              </p>
+                            </div>
+                            <div className="ms-8">
+                              <h4 className="text-lg text-primary font-medium py-1">
+                                Correct answer
+                              </h4>
+                              <p className="text-base text-[#414141] font-medium">
+                                {cval.correctAnswer}
+                              </p>
+                            </div>
+                            <div className="ms-8">
+                              <h4 className="text-lg text-primary font-medium py-1">
+                                Your answer
+                              </h4>
+                              <p className="text-base text-[#414141] font-medium">
+                                {cval.userAnswer || "Answer not provided."}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="px-6 space-y-8">
-                  {userResp?.length > 0 &&
-                    userResp?.map((cval, index) => (
-                      <div key={index} className="space-y-4">
-                        <p className="text-lg text-[#414141] font-medium">
-                          {index + 1}. {cval.question}
-                        </p>
-                        <div>
-                          <h4 className="text-lg text-primary font-medium py-1">
-                            Options
-                          </h4>
-                          <p className="text-base text-[#414141] font-medium">
-                            {cval.options.join(", ")}
-                          </p>
-                        </div>
-                        <div>
-                          <h4 className="text-lg text-primary font-medium py-1">
-                            Correct answer
-                          </h4>
-                          <p className="text-base text-[#414141] font-medium">
-                            {cval.correctAnswer}
-                          </p>
-                        </div>
-                        <div>
-                          <h4 className="text-lg text-primary font-medium py-1">
-                            Your answer
-                          </h4>
-                          <p className="text-base text-[#414141] font-medium">
-                            {cval.userAnswer || "Answer not provided."}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            </div>
+              )}
+            </>
           )}
         </>
       )}
