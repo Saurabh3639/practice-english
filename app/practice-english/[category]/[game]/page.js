@@ -5,6 +5,7 @@ import React, { use } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import DailyVocab from "../../_components/Vocabulary/DailyVocab";
 import CorrectWord from "../../_components/Vocabulary/CorrectWord";
+import SynonymAntonym from "../../_components/Vocabulary/SynonymAntonym";
 
 export default function GamePage({ params }) {
   const router = useRouter();
@@ -35,6 +36,8 @@ export default function GamePage({ params }) {
           <DailyVocab />
         ) : game.replace(/-/g, " ") == "choose the correct word" ? (
           <CorrectWord />
+        ) : game.replace(/-/g, " ") == "synonym and antonym" ? (
+          <SynonymAntonym />
         ) : (
           <>No Game Component</>
         )}

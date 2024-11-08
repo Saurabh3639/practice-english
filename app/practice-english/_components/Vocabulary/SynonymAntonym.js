@@ -1,14 +1,14 @@
 import React from "react";
 import QuizGame from "../QuizGame";
 
-export default function CorrectWord() {
+export default function SynonymAntonym() {
   return (
     <QuizGame
       category="vocabulary"
-      gameName="Choose the Correct Word"
+      gameName="Synonym and Antonym"
       totalQue="10"
       dataStructurePrompt={`{
-        "question": "The sentence with a blank space indicating a missing word.",
+        "question": "Select the Synonym or Antonym of a particular word (e.g., 'Select the synonym for 'Word')",
         "options": ["Option A", "Option B", "Option C", "Option D"],
         "correctAnswer": "The correct option from the options array (e.g., 'Option B')"
       }`}
