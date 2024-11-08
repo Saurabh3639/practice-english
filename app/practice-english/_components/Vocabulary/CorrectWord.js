@@ -4,6 +4,7 @@ import { chatSession } from "@/utility/GeminiAIModal";
 import React, { useEffect, useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import { v4 as uuidv4 } from "uuid";
+import { GiStarsStack } from "react-icons/gi";
 
 const category = "vocabulary";
 const gameName = "Choose the Correct Word";
@@ -99,7 +100,7 @@ export default function CorrectWord() {
           mockId: uuidv4(), // Generate the new mockId here
           score: score,
           feedback: aiFeedback?.feedback,
-          category: category
+          category: category,
         };
         console.log("dataToSubmit :", dataToSubmit);
 
@@ -175,7 +176,8 @@ export default function CorrectWord() {
           ) : (
             <>
               {result ? (
-                <div className="bg-[#FFFDFA] border shadow-lg h-[480px] w-[500px] rounded-lg py-4 px-8 flex flex-col items-center justify-evenly overflow-clip scrollbar-hide">
+                <div className="bg-[#FFFDFA] border shadow-lg h-[400px] w-[400px] relative rounded-lg py-4 px-8 flex flex-col items-center justify-evenly overflow-clip scrollbar-hide">
+                  <GiStarsStack className="text-9xl text-[#F9D65C] py-2" />
                   <div className="w-fit text-3xl font-normal text-center">
                     Score : {result?.score || 0}/10
                   </div>
