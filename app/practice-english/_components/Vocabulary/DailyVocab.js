@@ -52,7 +52,7 @@ export default function DailyVocab() {
         {data && data[index] ? (
           <div className="bg-[#FFFDFA] shadow-lg h-[480px] w-[500px] rounded-lg py-4 px-8 flex flex-col items-center justify-evenly overflow-clip scrollbar-hide">
             {/* Word Number */}
-            <div className="w-fit px-3 py-3.5 rounded-full drop-shadow-md bg-white text-3xl text-[#4A0306] font-normal text-center">
+            <div className="w-fit px-3 py-3.5 rounded-full drop-shadow-md bg-white text-3xl font-normal text-center">
               {index + 1}/{data.length}
             </div>
             {/* Word */}

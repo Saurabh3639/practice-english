@@ -1,18 +1,34 @@
 "use client";
 
 import { chatSession } from "@/utility/GeminiAIModal";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { IoArrowBack } from "react-icons/io5";
+import { v4 as uuidv4 } from "uuid";
+import { GiStarsStack } from "react-icons/gi";
 
+const category = "vocabulary";
 const gameName = "Choose the Correct Word";
+const totalQue = 10;
 
 export default function CorrectWord() {
   const [data, setData] = useState(null);
-  const [selectedOptions, setSelectedOptions] = useState({});
-  const [score, setScore] = useState(0);
+  const [index, setIndex] = useState(0); // Track the current question index
+  const [selectedOption, setSelectedOption] = useState(null); // Track selected option
+  const [userResp, setUserResp] = useState([]); // Store responses
+  const [result, setResult] = useState({
+    score: 0,
+    feedback: null,
+  });
+  const [viewAnswers, setViewAnswers] = useState(false);
 
-  console.log("data:", JSON.stringify(data));
-  console.log("score:", score);
+  const currentQuestion = data && data[index]; // Current question based on index
 
+  // To update selected option
+  const handleOptionClick = (option) => {
+    setSelectedOption(option); // Set selected option
+  };
+
+  // Function to generate questions data for game
   const onGenerate = async () => {
     const InputPrompt = `Please generate 10 multiple-choice questions for a ${gameName} game. Each question should be represented as a JSON object with the following structure:
     {
@@ -28,95 +44,209 @@ export default function CorrectWord() {
       .text()
       .replace("```json", "")
       .replace("```", "");
-    console.log("textResp:", textResp);
+    // console.log("textResp:", textResp);
+    // console.log("textResp:", JSON.parse(textResp));
 
     setData(JSON.parse(textResp));
-
-    setScore(0); // Reset score when new questions are generated
-    setSelectedOptions({}); // Reset selected options
   };
 
-  // Function to handle option click
-  const handleOptionClick = (questionIndex, selectedOption) => {
-    const correctAnswer = data[questionIndex].correctAnswer;
-
-    // Check if the question has already been answered
-    if (!selectedOptions[questionIndex]) {
-      // If the selected option is correct, increment the score
-      if (selectedOption === correctAnswer) {
-        setScore((prevScore) => prevScore + 1);
-      }
-
-      // Update the selected options with the user's selected option
-      setSelectedOptions((prev) => ({
+  // Function to update user response after submit
+  const handleSubmit = () => {
+    if (selectedOption) {
+      // Update userResp with the current question and answer
+      setUserResp((prev) => [
         ...prev,
-        [questionIndex]: {
-          selectedOption,
-          isCorrect: selectedOption === correctAnswer,
+        {
+          question: currentQuestion.question,
+          options: currentQuestion.options,
+          correctAnswer: currentQuestion.correctAnswer,
+          userAnswer: selectedOption,
         },
-      }));
+      ]);
+
+      // Move to the next question and reset selectedOption
+      setIndex((prevIndex) => prevIndex + 1);
+      setSelectedOption(null);
     }
   };
 
+  // Function to generate feeback as per user response
+  const onGenerateResult = async (score) => {
+    const overallPrompt = `In the ${gameName} game, user's Total Score is ${score} out of ${totalQue}. Based on this information. Provide overall feedback in short. Format the response as:
+    { "feedback": "<feedback>",}`;
+
+    try {
+      const result = await chatSession.sendMessage(overallPrompt);
+      const responseData = await result.response.text();
+
+      // Use regex to extract the data between the first `{` and the last `}`
+      const jsonMatch = responseData.match(/\{[\s\S]*\}/);
+
+      if (jsonMatch && jsonMatch[0]) {
+        const jsonData = jsonMatch[0];
+
+        // Now you can parse and use this JSON data
+        const aiFeedback = JSON.parse(jsonData);
+        // console.log("Parsed AI Feedback :", aiFeedback);
+
+        setResult((prevResult) => ({
+          ...prevResult,
+          feedback: aiFeedback?.feedback,
+        }));
+
+        const dataToSubmit = {
+          gameName: gameName,
+          userResp: userResp,
+          mockId: uuidv4(), // Generate the new mockId here
+          score: score,
+          feedback: aiFeedback?.feedback,
+          category: category,
+        };
+        console.log("dataToSubmit :", dataToSubmit);
+
+        // Call your function to submit the report
+        // await submitReport(dataToSubmit);
+      } else {
+        console.error("No valid JSON data found.");
+      }
+    } catch (error) {
+      console.error("Error while generating:", error);
+    }
+  };
+
+  useEffect(() => {
+    onGenerate(); // Call onGenerate on component mount
+
+    if (index >= data?.length) {
+      // Calculate score based on user responses
+      const totalScore = userResp.reduce((acc, curr) => {
+        return curr.correctAnswer === curr.userAnswer ? acc + 1 : acc;
+      }, 0);
+
+      setResult((prevResult) => ({
+        ...prevResult,
+        score: totalScore,
+      }));
+
+      onGenerateResult(totalScore);
+    }
+  }, [index, userResp]); // Run when `index` changes
+
   return (
-    <>
-      <div className="flex gap-4 items-center mb-4">
-        <h4 className="text-lg font-semibold">
-          {gameName}{" "}
-          <span>
-            [Score: {score} / {data?.length || 10}]
-          </span>
-        </h4>
-        <button
-          onClick={onGenerate}
-          className="border border-red-500 rounded-lg text-red-500 px-4 py-2 cursor-pointer"
-        >
-          Generate
-        </button>
-      </div>
-
-      <div>
-        {data?.length > 0 &&
-          data?.map((cval, questionIndex) => {
-            return (
-              <div key={questionIndex} className="mb-4">
-                <p>
-                  {questionIndex + 1}] {cval.question}
-                </p>
-
-                <ol>
-                  {cval.options.map((option, optionIndex) => {
-                    const isSelected =
-                      selectedOptions[questionIndex]?.selectedOption === option;
-                    const isCorrect = selectedOptions[questionIndex]?.isCorrect;
-
-                    // Determine the class based on whether the user selected the option and whether it's correct
-                    const selectedClass = isSelected
-                      ? isCorrect
-                        ? "text-green-500"
-                        : "text-red-500"
-                      : "";
-
-                    return (
-                      <li key={optionIndex}>
-                        <span
-                          className={`cursor-pointer ${selectedClass}`}
-                          onClick={() =>
-                            handleOptionClick(questionIndex, option)
-                          }
-                        >
-                          {optionIndex + 1}. {option}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ol>
-
-                {/* <p className="text-green-500">{cval.correctAnswer}</p> */}
+    <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      {data == null ? (
+        <>Loading...</>
+      ) : (
+        <>
+          {index < data?.length ? (
+            <div className="text-center">
+              <div className="bg-[#FFFDFA] min-w-[60vw] py-4 border shadow-md rounded-lg">
+                <h3 className="font-normal text-lg">
+                  <span className="text-2xl">
+                    Q {index + 1}
+                    <span className="text-sm">/{data?.length}</span>{" "}
+                  </span>
+                  {currentQuestion?.question}
+                </h3>
               </div>
-            );
-          })}
-      </div>
-    </>
+              <div className="my-8 grid grid-cols-2 gap-4">
+                {currentQuestion?.options.map((option, i) => {
+                  return (
+                    <div
+                      key={i}
+                      onClick={() => handleOptionClick(option)}
+                      className={`border-2 rounded-lg p-2 text-center text-lg font-normal ${
+                        selectedOption === option
+                          ? "text-primary border-primary"
+                          : "text-[#4C4C4C] border-[#FFD9DD]"
+                      }`}
+                    >
+                      {option}
+                    </div>
+                  );
+                })}
+              </div>
+              <button
+                onClick={handleSubmit}
+                className="rounded-lg py-2 px-10 text-center bg-primary text-white"
+              >
+                Submit
+              </button>
+            </div>
+          ) : (
+            <>
+              {result ? (
+                <div className="bg-[#FFFDFA] border shadow-lg h-[400px] w-[400px] relative rounded-lg py-4 px-8 flex flex-col items-center justify-evenly overflow-clip scrollbar-hide">
+                  <GiStarsStack className="text-9xl text-[#F9D65C] py-2" />
+                  <div className="w-fit text-3xl font-normal text-center">
+                    Score : {result?.score || 0}/10
+                  </div>
+                  <p className="text-lg font-normal text-center">
+                    {result?.feedback || "Loading..."}
+                  </p>
+                  <button
+                    onClick={() => setViewAnswers(true)}
+                    className="px-4 py-2 bg-primary text-white text-base font-medium rounded-lg"
+                  >
+                    View your answers
+                  </button>
+                </div>
+              ) : (
+                "Loading..."
+              )}
+
+              {/* View Answer pop up */}
+              {viewAnswers && (
+                <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-700 bg-opacity-50 z-50">
+                  <div className="bg-white p-6 rounded-md h-[90vh] min-w-[50vw] overflow-scroll scrollbar-hide">
+                    <div className="flex items-center gap-4 mb-4 text-2xl">
+                      <IoArrowBack
+                        className="cursor-pointer"
+                        onClick={() => setViewAnswers(false)}
+                      />
+                      <span className="text-primary">Your answers</span>
+                    </div>
+                    <div className="px-6 space-y-8">
+                      {userResp?.length > 0 &&
+                        userResp?.map((cval, index) => (
+                          <div key={index} className="space-y-4">
+                            <p className="text-lg text-[#414141] font-medium">
+                              {index + 1}. {cval.question}
+                            </p>
+                            <div className="ms-8">
+                              <h4 className="text-lg text-primary font-medium py-1">
+                                Options
+                              </h4>
+                              <p className="text-base text-[#414141] font-medium">
+                                {cval.options.join(", ")}
+                              </p>
+                            </div>
+                            <div className="ms-8">
+                              <h4 className="text-lg text-primary font-medium py-1">
+                                Correct answer
+                              </h4>
+                              <p className="text-base text-[#414141] font-medium">
+                                {cval.correctAnswer}
+                              </p>
+                            </div>
+                            <div className="ms-8">
+                              <h4 className="text-lg text-primary font-medium py-1">
+                                Your answer
+                              </h4>
+                              <p className="text-base text-[#414141] font-medium">
+                                {cval.userAnswer || "Answer not provided."}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </>
+      )}
+    </div>
   );
 }
