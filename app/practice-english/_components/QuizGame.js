@@ -3,8 +3,9 @@
 import { chatSession } from "@/utility/GeminiAIModal";
 import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { GiStarsStack } from "react-icons/gi";
 import { IoArrowBack } from "react-icons/io5";
+import { AiFillMeh } from "react-icons/ai";
+import { AiFillSmile } from "react-icons/ai";
 
 export default function QuizGame({
   category,
@@ -176,7 +177,11 @@ function ResultView({ result, userResp, viewAnswers, setViewAnswers }) {
     <>
       {result ? (
         <div className="bg-[#FFFDFA] border shadow-lg h-[400px] w-[400px] relative rounded-lg py-4 px-8 flex flex-col items-center justify-evenly overflow-clip scrollbar-hide">
-          <GiStarsStack className="text-9xl text-[#F9D65C] py-2" />
+          {result?.feedback && result?.score >= 5 ? (
+            <AiFillSmile className="text-9xl text-[#F9D65C] py-2" />
+          ) : result?.feedback && result?.score < 5 ? (
+            <AiFillMeh className="text-9xl text-[#F9D65C] py-2" />
+          ) : null}
           <div className="w-fit text-3xl font-normal text-center">
             Score : {result?.score && result?.feedback ? result?.score : 0}/
             {userResp?.length || 0}
@@ -186,7 +191,7 @@ function ResultView({ result, userResp, viewAnswers, setViewAnswers }) {
           </p>
           <button
             onClick={() => setViewAnswers(true)}
-            className="px-4 py-2 bg-primary text-white text-base font-medium rounded-lg"
+            className="px-4 py-2 my-2 bg-primary text-white text-base font-medium rounded-lg"
           >
             View your answers
           </button>
