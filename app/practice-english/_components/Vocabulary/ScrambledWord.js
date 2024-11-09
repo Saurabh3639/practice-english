@@ -9,9 +9,6 @@ import {
   TextInputQuestion,
 } from "../QuizGame";
 
-const category = "vocabulary";
-const gameName = "Scrambled Word";
-const totalQue = 10;
 const instructions = [
   "Read the scrambled word",
   "Rearrange the letters to form a word",
@@ -22,7 +19,7 @@ const instructions = [
   </>,
 ];
 
-export default function ScrambledWord() {
+export default function ScrambledWord({ category, gameName, totalQue }) {
   const [loading, setLoading] = useState(false);
   const [isDataAdded, setIsDataAdded] = useState(false);
   const [index, setIndex] = useState(0); // Track the current question index

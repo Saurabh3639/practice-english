@@ -7,6 +7,8 @@ import DailyVocab from "../../_components/Vocabulary/DailyVocab";
 import SynonymAntonym from "../../_components/Vocabulary/SynonymAntonym";
 import CorrectWord from "../../_components/Vocabulary/CorrectWord";
 import ScrambledWord from "../../_components/Vocabulary/ScrambledWord";
+import CorrectVerbTense from "../../_components/Grammar/VerbTenses/CorrectVerbTense";
+import CorrectFormOfVerb from "../../_components/Grammar/VerbTenses/CorrectFormOfVerb";
 
 export default function GamePage({ params }) {
   const router = useRouter();
@@ -34,13 +36,37 @@ export default function GamePage({ params }) {
       {/* block 2 - Load game component */}
       <div>
         {game.replace(/-/g, " ") == "daily vocab" ? (
-          <DailyVocab />
+          <DailyVocab gameName={game.replace(/-/g, " ")} />
         ) : game.replace(/-/g, " ") == "synonym and antonym" ? (
-          <SynonymAntonym />
+          <SynonymAntonym
+            category={category}
+            gameName={game.replace(/-/g, " ")}
+            totalQue={10}
+          />
         ) : game.replace(/-/g, " ") == "choose the correct word" ? (
-          <CorrectWord />
+          <CorrectWord
+            category={category}
+            gameName={game.replace(/-/g, " ")}
+            totalQue={10}
+          />
         ) : game.replace(/-/g, " ") == "scrambled word" ? (
-          <ScrambledWord />
+          <ScrambledWord
+            category={category}
+            gameName={game.replace(/-/g, " ")}
+            totalQue={10}
+          />
+        ) : game.replace(/-/g, " ") == "choose the correct verb tense" ? (
+          <CorrectVerbTense
+            category={category}
+            gameName={game.replace(/-/g, " ")}
+            totalQue={10}
+          />
+        ) : game.replace(/-/g, " ") == "choose the correct form of verb" ? (
+          <CorrectFormOfVerb
+            category={category}
+            gameName={game.replace(/-/g, " ")}
+            totalQue={10}
+          />
         ) : (
           <>No Game Available Yet!</>
         )}
