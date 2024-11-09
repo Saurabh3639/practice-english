@@ -17,6 +17,8 @@ import ReflexivePronoun from "../../_components/Grammar/Pronouns/ReflexivePronou
 import PronounCase from "../../_components/Grammar/Pronouns/PronounCase";
 import RelativePronoun from "../../_components/Grammar/Pronouns/RelativePronoun";
 import CorrectPreposition from "../../_components/Grammar/Preposition/CorrectPreposition";
+import CorrectAdjective from "../../_components/Grammar/AdjectivesAndAdverbs/CorrectAdjective";
+import CorrectAdverb from "../../_components/Grammar/AdjectivesAndAdverbs/CorrectAdverb";
 
 export default function GamePage({ params }) {
   const router = useRouter();
@@ -119,9 +121,20 @@ export default function GamePage({ params }) {
             gameName={game.replace(/-/g, " ")}
             totalQue={10}
           />
-        ) : game.replace(/-/g, " ") ==
-          "choose the correct preposition" ? (
+        ) : game.replace(/-/g, " ") == "choose the correct preposition" ? (
           <CorrectPreposition
+            category={category}
+            gameName={game.replace(/-/g, " ")}
+            totalQue={10}
+          />
+        ) : game.replace(/-/g, " ") == "choose the correct adjective" ? (
+          <CorrectAdjective
+            category={category}
+            gameName={game.replace(/-/g, " ")}
+            totalQue={10}
+          />
+        ) : game.replace(/-/g, " ") == "choose the correct adverb" ? (
+          <CorrectAdverb
             category={category}
             gameName={game.replace(/-/g, " ")}
             totalQue={10}
