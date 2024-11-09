@@ -13,6 +13,9 @@ import RearrangeVerbTense from "../../_components/Grammar/VerbTenses/RearrangeVe
 import CorrectNoun from "../../_components/Grammar/Nouns/CorrectNoun";
 import TypesOfNouns from "../../_components/Grammar/Nouns/TypesOfNouns";
 import NounPuzzle from "../../_components/Grammar/Nouns/NounPuzzle";
+import ReflexivePronoun from "../../_components/Grammar/Pronouns/ReflexivePronoun";
+import PronounCase from "../../_components/Grammar/Pronouns/PronounCase";
+import RelativePronoun from "../../_components/Grammar/Pronouns/RelativePronoun";
 
 export default function GamePage({ params }) {
   const router = useRouter();
@@ -91,6 +94,26 @@ export default function GamePage({ params }) {
           />
         ) : game.replace(/-/g, " ") == "noun puzzle" ? (
           <NounPuzzle
+            category={category}
+            gameName={game.replace(/-/g, " ")}
+            totalQue={10}
+          />
+        ) : game.replace(/-/g, " ") ==
+          "fill in the blank with reflexive pronoun" ? (
+          <ReflexivePronoun
+            category={category}
+            gameName={game.replace(/-/g, " ")}
+            totalQue={10}
+          />
+        ) : game.replace(/-/g, " ") == "fill in the blank with pronoun case" ? (
+          <PronounCase
+            category={category}
+            gameName={game.replace(/-/g, " ")}
+            totalQue={10}
+          />
+        ) : game.replace(/-/g, " ") ==
+          "fill in the blank with relative pronoun" ? (
+          <RelativePronoun
             category={category}
             gameName={game.replace(/-/g, " ")}
             totalQue={10}
