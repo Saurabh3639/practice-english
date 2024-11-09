@@ -381,10 +381,14 @@ export function InfoSection({ loading, info, onClick }) {
           boxShadow: "0px 2.3px 41.31px 0px #ED1C2412",
         }}
       >
-        <p className="text-xl font-medium text-primary py-2">{info?.title}</p>
-        <p className="text-lg font-normal text-[#414141] py-2">
-          {info?.content}
-        </p>
+        {info?.title && (
+          <p className="text-xl font-medium text-primary py-2">{info?.title}</p>
+        )}
+        {info?.content && (
+          <p className="text-lg font-normal text-[#414141] py-2">
+            {info?.content}
+          </p>
+        )}
         {info?.types && (
           <ul className="list-disc pl-6">
             {Object.entries(info?.types).map(([type, description], index) => (
