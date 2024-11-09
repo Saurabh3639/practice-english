@@ -42,7 +42,7 @@ export default function GamePage({ params }) {
         ) : game.replace(/-/g, " ") == "scrambled word" ? (
           <ScrambledWord />
         ) : (
-          <>No Game Component</>
+          <>No Game Available Yet!</>
         )}
       </div>
     </div>
