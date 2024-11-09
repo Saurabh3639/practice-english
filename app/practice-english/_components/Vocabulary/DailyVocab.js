@@ -32,7 +32,7 @@ export default function DailyVocab({ gameName }) {
     };
 
     onGenerate(); // Call onGenerate on component mount
-  }, []);
+  }, [gameName]);
 
   const handleNext = () => {
     if (data && index < data.length - 1) {
