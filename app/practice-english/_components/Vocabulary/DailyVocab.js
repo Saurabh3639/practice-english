@@ -4,13 +4,13 @@ import React, { useEffect, useState } from "react";
 import { chatSession } from "@/utility/GeminiAIModal";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 
-export default function DailyVocab() {
+export default function DailyVocab({ gameName }) {
   const [data, setData] = useState(null);
   const [index, setIndex] = useState(0); // Track the current word index
 
   useEffect(() => {
     const onGenerate = async () => {
-      const InputPrompt = `Please generate 5 words for a Daily Vocab game. Each word should be represented as a JSON object with the following structure:
+      const InputPrompt = `Please generate 5 words for a ${gameName} game. Each word should be represented as a JSON object with the following structure:
       {
         "word": "The word which is getting used in Work, Study, IT sector and Buisness Vocabulary.",
         "part_of_speech": "Part of speech like Noun, Pronoun, Verb, Adjective, Adverb, Preposition, Conjunction, Interjunction etc.",
@@ -32,7 +32,7 @@ export default function DailyVocab() {
     };
 
     onGenerate(); // Call onGenerate on component mount
-  }, []);
+  }, [gameName]);
 
   const handleNext = () => {
     if (data && index < data.length - 1) {
