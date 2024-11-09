@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { GoQuestion } from "react-icons/go";
 import { v4 as uuidv4 } from "uuid";
-import { ResultView } from "../QuizGame";
+import { HintPopup, ResultView } from "../QuizGame";
 import { IoArrowBack } from "react-icons/io5";
 
 const category = "vocabulary";
@@ -172,21 +172,12 @@ export default function ScrambledWord() {
                 </button>
               </div>
 
-              {viewHint && (
-                <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-700 bg-opacity-50 z-50">
-                  <div className="bg-white p-6 rounded-md w-[50vw] overflow-scroll scrollbar-hide">
-                    <div className="flex items-center gap-4 mb-4 text-2xl">
-                      <IoArrowBack
-                        className="cursor-pointer"
-                        onClick={() => setViewHint(false)}
-                      />
-                      <span className="text-primary">Hint</span>
-                    </div>
-                    <div className="font-medium text-xl px-6">
-                      {currentQuestion?.hint}
-                    </div>
-                  </div>
-                </div>
+              {viewHint && currentQuestion?.hint && (
+                <HintPopup
+                  title="Hint"
+                  content={currentQuestion?.hint}
+                  setViewPopUp={setViewHint}
+                />
               )}
             </>
           ) : (
