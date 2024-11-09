@@ -172,7 +172,7 @@ export default function QuizGame({
   );
 }
 
-function ResultView({ result, userResp, viewAnswers, setViewAnswers }) {
+export function ResultView({ result, userResp, viewAnswers, setViewAnswers }) {
   return (
     <>
       {result ? (
@@ -215,12 +215,14 @@ function ResultView({ result, userResp, viewAnswers, setViewAnswers }) {
                 userResp?.map((cval, index) => (
                   <div key={index} className="space-y-4">
                     <p className="text-lg text-[#414141] font-medium">
-                      {index + 1}. {cval.question}
+                      {index + 1}. {cval.question ? cval.question : cval.word}
                     </p>
-                    <AnswerSection
-                      title="Options"
-                      content={cval.options.join(", ")}
-                    />
+                    {cval.options && (
+                      <AnswerSection
+                        title="Options"
+                        content={cval.options.join(", ")}
+                      />
+                    )}
                     <AnswerSection
                       title="Correct answer"
                       content={cval.correctAnswer}
