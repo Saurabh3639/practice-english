@@ -10,6 +10,9 @@ import ScrambledWord from "../../_components/Vocabulary/ScrambledWord";
 import CorrectVerbTense from "../../_components/Grammar/VerbTenses/CorrectVerbTense";
 import CorrectFormOfVerb from "../../_components/Grammar/VerbTenses/CorrectFormOfVerb";
 import RearrangeVerbTense from "../../_components/Grammar/VerbTenses/RearrangeVerbTense";
+import CorrectNoun from "../../_components/Grammar/Nouns/CorrectNoun";
+import TypesOfNouns from "../../_components/Grammar/Nouns/TypesOfNouns";
+import NounPuzzle from "../../_components/Grammar/Nouns/NounPuzzle";
 
 export default function GamePage({ params }) {
   const router = useRouter();
@@ -70,6 +73,24 @@ export default function GamePage({ params }) {
           />
         ) : game.replace(/-/g, " ") == "choose the correct form of verb" ? (
           <CorrectFormOfVerb
+            category={category}
+            gameName={game.replace(/-/g, " ")}
+            totalQue={10}
+          />
+        ) : game.replace(/-/g, " ") == "choose the correct noun" ? (
+          <CorrectNoun
+            category={category}
+            gameName={game.replace(/-/g, " ")}
+            totalQue={10}
+          />
+        ) : game.replace(/-/g, " ") == "types of nouns" ? (
+          <TypesOfNouns
+            category={category}
+            gameName={game.replace(/-/g, " ")}
+            totalQue={10}
+          />
+        ) : game.replace(/-/g, " ") == "noun puzzle" ? (
+          <NounPuzzle
             category={category}
             gameName={game.replace(/-/g, " ")}
             totalQue={10}
