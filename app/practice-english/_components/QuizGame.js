@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 import { IoArrowBack } from "react-icons/io5";
 import { AiFillMeh } from "react-icons/ai";
 import { AiFillSmile } from "react-icons/ai";
+import { GoQuestion } from "react-icons/go";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 
 export default function QuizGame({
   category,
@@ -117,7 +119,7 @@ export default function QuizGame({
       setResult((prevResult) => ({ ...prevResult, score: totalScore }));
       onGenerateResult(totalScore);
     }
-  }, [index, userResp]);
+  }, [index, data?.length, userResp]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh]">
@@ -250,7 +252,64 @@ function AnswerSection({ title, content }) {
   );
 }
 
-export function HintPopup({ title, content, setViewPopUp }) {
+export function TextInputQuestion({
+  data,
+  currentQuestion,
+  index,
+  userInput,
+  setUserInput,
+  handleSubmit,
+  viewHint,
+  setViewHint,
+}) {
+  return (
+    <>
+      <div className="flex flex-col gap-8">
+        <div className="bg-[#FFFDFA] w-[50vw] px-3 py-4 border shadow-md rounded-lg">
+          <h3 className="font-normal text-lg flex items-center justify-between">
+            <span className="text-2xl">
+              Q {index + 1}
+              <span className="text-sm">/{data?.length}</span>
+              &nbsp;&nbsp;
+              <span className="text-3xl text-[#6A6A6A] tracking-[0.5rem] px-4">
+                {currentQuestion?.word}
+              </span>
+            </span>
+            <GoQuestion
+              className="mx-1 text-primary text-xl inline"
+              onClick={() => setViewHint(true)}
+            />
+          </h3>
+        </div>
+        <input
+          type="text"
+          name=""
+          id=""
+          value={userInput}
+          placeholder="Type the word here"
+          className="border-b-2 border-[#514F4F] focus:outline-none w-[50vw] text-lg font-normal"
+          onChange={(e) => setUserInput(e.target.value)}
+        />
+        <button
+          onClick={handleSubmit}
+          className="rounded-lg py-2 px-10 text-center bg-primary text-white w-fit"
+        >
+          Submit
+        </button>
+      </div>
+
+      {viewHint && currentQuestion?.hint && (
+        <HintPopup
+          title="Hint"
+          content={currentQuestion?.hint}
+          setViewPopUp={setViewHint}
+        />
+      )}
+    </>
+  );
+}
+
+function HintPopup({ title, content, setViewPopUp }) {
   return (
     <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-700 bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-md w-[50vw] overflow-scroll scrollbar-hide">
@@ -264,5 +323,43 @@ export function HintPopup({ title, content, setViewPopUp }) {
         <div className="font-medium text-xl px-6">{content}</div>
       </div>
     </div>
+  );
+}
+
+export function InstructionsSection({ loading, instructions, onClick }) {
+  return (
+    <>
+      <div
+        className="bg-white shadow-md rounded-lg px-8 pt-6 pb-4 mb-4"
+        style={{
+          width: "760px",
+          boxShadow: "0px 2.3px 41.31px 0px #ED1C2412",
+        }}
+      >
+        <AiOutlineInfoCircle className="my-4 text-primary text-xl" />
+        <ol className="list-decimal pl-5 mb-2">
+          {instructions?.map((point, index) => {
+            return (
+              <li key={index} className="text-gray-700 text-base mb-2">
+                {point}
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+      <div className="flex justify-start mt-4">
+        <button
+          onClick={onClick}
+          className="bg-primary text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          style={{
+            width: "268px",
+            height: "50px",
+            borderRadius: "8px",
+          }}
+        >
+          {loading ? "Loading..." : "Next"}
+        </button>
+      </div>
+    </>
   );
 }
