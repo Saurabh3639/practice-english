@@ -9,6 +9,7 @@ import CorrectWord from "../../_components/Vocabulary/CorrectWord";
 import ScrambledWord from "../../_components/Vocabulary/ScrambledWord";
 import CorrectVerbTense from "../../_components/Grammar/VerbTenses/CorrectVerbTense";
 import CorrectFormOfVerb from "../../_components/Grammar/VerbTenses/CorrectFormOfVerb";
+import RearrangeVerbTense from "../../_components/Grammar/VerbTenses/RearrangeVerbTense";
 
 export default function GamePage({ params }) {
   const router = useRouter();
@@ -51,6 +52,12 @@ export default function GamePage({ params }) {
           />
         ) : game.replace(/-/g, " ") == "scrambled word" ? (
           <ScrambledWord
+            category={category}
+            gameName={game.replace(/-/g, " ")}
+            totalQue={10}
+          />
+        ) : game.replace(/-/g, " ") == "rearrange in correct verb tense" ? (
+          <RearrangeVerbTense
             category={category}
             gameName={game.replace(/-/g, " ")}
             totalQue={10}
