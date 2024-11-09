@@ -1,5 +1,5 @@
 import React from "react";
-import QuizGame from "../QuizGame";
+import QuizGame from "../../QuizGame";
 
 export default function CorrectVerbTense({ category, gameName, totalQue }) {
   return (
