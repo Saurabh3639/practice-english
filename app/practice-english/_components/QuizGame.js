@@ -370,3 +370,44 @@ export function InstructionsSection({ loading, instructions, onClick }) {
     </>
   );
 }
+
+export function InfoSection({ loading, info, onClick }) {
+  return (
+    <>
+      <div
+        className="bg-white shadow-md rounded-lg px-8 pt-6 pb-4 mb-4"
+        style={{
+          width: "760px",
+          boxShadow: "0px 2.3px 41.31px 0px #ED1C2412",
+        }}
+      >
+        <p className="text-xl font-medium text-primary py-2">{info?.title}</p>
+        <p className="text-lg font-normal text-[#414141] py-2">
+          {info?.content}
+        </p>
+        {info?.types && (
+          <ul className="list-disc pl-6">
+            {Object.entries(info?.types).map(([type, description], index) => (
+              <li key={index} className="py-2 text-lg font-normal">
+                <span className="font-semibold">{type}:</span> {description}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <div className="flex justify-start mt-4">
+        <button
+          onClick={onClick}
+          className="bg-primary text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          style={{
+            width: "268px",
+            height: "50px",
+            borderRadius: "8px",
+          }}
+        >
+          {loading ? "Loading..." : "Next"}
+        </button>
+      </div>
+    </>
+  );
+}
