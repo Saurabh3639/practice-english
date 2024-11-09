@@ -1,7 +1,7 @@
 "use client";
 
 import { chatSession } from "@/utility/GeminiAIModal";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import { AiFillMeh } from "react-icons/ai";
 import { AiFillSmile } from "react-icons/ai";
@@ -105,9 +105,18 @@ export default function QuizGame({
     }
   };
 
-  useEffect(() => {
-    onGenerate(); // Call onGenerate on component mount
+  // Create a ref to keep track of whether `onGenerate` has been called
+  const hasCalledOnGenerate = useRef(false);
 
+  useEffect(() => {
+    // Only call `onGenerate` if it hasn't been called before
+    if (!hasCalledOnGenerate.current) {
+      onGenerate(); // Call `onGenerate` function once on component mount
+      hasCalledOnGenerate.current = true; // Mark `onGenerate` as called
+    }
+  }, []); // Empty dependency array ensures this only runs once on mount
+
+  useEffect(() => {
     if (index >= data?.length) {
       // Calculate score based on user responses
       const totalScore = userResp.reduce(
