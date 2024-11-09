@@ -16,6 +16,7 @@ import NounPuzzle from "../../_components/Grammar/Nouns/NounPuzzle";
 import ReflexivePronoun from "../../_components/Grammar/Pronouns/ReflexivePronoun";
 import PronounCase from "../../_components/Grammar/Pronouns/PronounCase";
 import RelativePronoun from "../../_components/Grammar/Pronouns/RelativePronoun";
+import CorrectPreposition from "../../_components/Grammar/Preposition/CorrectPreposition";
 
 export default function GamePage({ params }) {
   const router = useRouter();
@@ -114,6 +115,13 @@ export default function GamePage({ params }) {
         ) : game.replace(/-/g, " ") ==
           "fill in the blank with relative pronoun" ? (
           <RelativePronoun
+            category={category}
+            gameName={game.replace(/-/g, " ")}
+            totalQue={10}
+          />
+        ) : game.replace(/-/g, " ") ==
+          "choose the correct preposition" ? (
+          <CorrectPreposition
             category={category}
             gameName={game.replace(/-/g, " ")}
             totalQue={10}
