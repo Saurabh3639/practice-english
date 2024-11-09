@@ -2,7 +2,6 @@
 
 import { chatSession } from "@/utility/GeminiAIModal";
 import React, { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { IoArrowBack } from "react-icons/io5";
 import { AiFillMeh } from "react-icons/ai";
 import { AiFillSmile } from "react-icons/ai";
@@ -90,7 +89,6 @@ export default function QuizGame({
         const dataToSubmit = {
           gameName,
           userResp,
-          mockId: uuidv4(), // Generate the new mockId here
           score,
           feedback: jsonData?.feedback,
           category,

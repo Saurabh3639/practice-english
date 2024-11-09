@@ -3,7 +3,6 @@
 import { chatSession } from "@/utility/GeminiAIModal";
 import React, { useEffect, useState } from "react";
 import { GoQuestion } from "react-icons/go";
-import { v4 as uuidv4 } from "uuid";
 import {
   InstructionsSection,
   ResultView,
@@ -105,7 +104,6 @@ export default function ScrambledWord() {
         const dataToSubmit = {
           gameName,
           userResp,
-          mockId: uuidv4(), // Generate the new mockId here
           score,
           feedback: jsonData?.feedback,
           category,
