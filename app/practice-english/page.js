@@ -3,7 +3,6 @@
 import { usePathname, useRouter } from "next/navigation";
 import { IoArrowBack } from "react-icons/io5";
 import { MdArrowForwardIos } from "react-icons/md";
-// import CorrectWord from "./_components/Vocabulary/CorrectWord";
 
 const buttonStyle = {
   height: "90px",
@@ -69,10 +68,6 @@ export default function PracticeEnglish() {
           })}
         </div>
       </div>
-
-      {/* <div className="border border-black p-2">
-        <CorrectWord />
-      </div> */}
     </div>
   );
 }

@@ -4,8 +4,9 @@ import { usePathname, useRouter } from "next/navigation";
 import React, { use } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import DailyVocab from "../../_components/Vocabulary/DailyVocab";
-import CorrectWord from "../../_components/Vocabulary/CorrectWord";
 import SynonymAntonym from "../../_components/Vocabulary/SynonymAntonym";
+import CorrectWord from "../../_components/Vocabulary/CorrectWord";
+import ScrambledWord from "../../_components/Vocabulary/ScrambledWord";
 
 export default function GamePage({ params }) {
   const router = useRouter();
@@ -34,12 +35,14 @@ export default function GamePage({ params }) {
       <div>
         {game.replace(/-/g, " ") == "daily vocab" ? (
           <DailyVocab />
-        ) : game.replace(/-/g, " ") == "choose the correct word" ? (
-          <CorrectWord />
         ) : game.replace(/-/g, " ") == "synonym and antonym" ? (
           <SynonymAntonym />
+        ) : game.replace(/-/g, " ") == "choose the correct word" ? (
+          <CorrectWord />
+        ) : game.replace(/-/g, " ") == "scrambled word" ? (
+          <ScrambledWord />
         ) : (
-          <>No Game Component</>
+          <>No Game Available Yet!</>
         )}
       </div>
     </div>
