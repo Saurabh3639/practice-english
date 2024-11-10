@@ -8,6 +8,17 @@ import { AiFillSmile } from "react-icons/ai";
 import { GoQuestion } from "react-icons/go";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 
+function parseSentenceWithBold(text) {
+  const parts = text.split(/(\*\*.*?\*\*)/g); // Split by ** markers
+  return parts.map((part, index) =>
+    part.startsWith("**") && part.endsWith("**") ? (
+      <strong key={index}>{part.slice(2, -2)}</strong> // Remove ** and wrap in <strong>
+    ) : (
+      part
+    )
+  );
+}
+
 export default function QuizGame({
   category,
   gameName,
@@ -142,7 +153,9 @@ export default function QuizGame({
                     Q {index + 1}
                     <span className="text-sm">/{data?.length}</span>&nbsp;&nbsp;
                   </span>
-                  {currentQuestion?.question}
+                  {currentQuestion?.question
+                    ? parseSentenceWithBold(currentQuestion?.question)
+                    : null}
                 </h3>
               </div>
               <div className="my-8 grid grid-cols-2 gap-4">
@@ -224,7 +237,14 @@ export function ResultView({ result, userResp, viewAnswers, setViewAnswers }) {
                 userResp?.map((cval, index) => (
                   <div key={index} className="space-y-4">
                     <p className="text-lg text-[#414141] font-medium">
-                      {index + 1}. {cval.question ? cval.question : cval.word}
+                      {index + 1}.{" "}
+                      {cval.question ? (
+                        parseSentenceWithBold(cval.question)
+                      ) : (
+                        <strong className="tracking-[0.5rem] px-2">
+                          {cval.word}
+                        </strong>
+                      )}
                     </p>
                     {cval.options && (
                       <AnswerSection
@@ -393,7 +413,20 @@ export function InfoSection({ loading, info, onClick }) {
           <ul className="list-disc pl-6">
             {Object.entries(info?.types).map(([type, description], index) => (
               <li key={index} className="py-2 text-lg font-normal">
-                <span className="font-semibold">{type}:</span> {description}
+                <span className="font-semibold">{type}:</span>
+
+                {/* Check if description is an array */}
+                {Array.isArray(description) ? (
+                  <ol className="list-decimal pl-6 mt-1">
+                    {description.map((desc, idx) => (
+                      <li key={idx} className="text-[#414141] py-1">
+                        {desc}
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <span className="text-[#414141] pl-2">{description}</span>
+                )}
               </li>
             ))}
           </ul>
