@@ -7,6 +7,7 @@ import { AiFillMeh } from "react-icons/ai";
 import { AiFillSmile } from "react-icons/ai";
 import { GoQuestion } from "react-icons/go";
 import { AiOutlineInfoCircle } from "react-icons/ai";
+import Loader from "@/utility/Loader";
 
 function parseSentenceWithBold(text) {
   const parts = text.split(/(\*\*.*?\*\*)/g); // Split by ** markers
@@ -140,9 +141,11 @@ export default function QuizGame({
   }, [index, data?.length, userResp]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[50vh]">
+    <div className="flex flex-col items-center justify-center relative min-h-[50vh]">
       {data == null ? (
-        <>Loading...</>
+        <div className="absolute bottom-6 left-6 w-[50%] h-[50%]">
+          <Loader />
+        </div>
       ) : (
         <>
           {index < data?.length ? (
