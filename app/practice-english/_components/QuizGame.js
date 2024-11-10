@@ -143,7 +143,7 @@ export default function QuizGame({
   return (
     <div className="flex flex-col items-center justify-center relative min-h-[50vh]">
       {data == null ? (
-        <div className="absolute bottom-6 left-6 w-[50%] h-[50%]">
+        <div className="absolute bottom-6 right-6 w-[50%] h-[50%]">
           <Loader />
         </div>
       ) : (
