@@ -90,7 +90,7 @@ export default function GamePage({ params }) {
             gameName={game.replace(/-/g, " ")}
             totalQue={10}
           />
-        ) : game.replace(/-/g, " ") == "types of nouns" ? (
+        ) : game.replace(/-/g, " ") == "identify the type of noun" ? (
           <TypesOfNouns
             category={category}
             gameName={game.replace(/-/g, " ")}

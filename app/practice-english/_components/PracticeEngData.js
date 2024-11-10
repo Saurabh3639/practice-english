@@ -14,7 +14,7 @@ export const categoriesData = {
       name: "Nouns",
       gamesData: [
         { id: 1, name: "Choose the correct noun" },
-        { id: 2, name: "Types of nouns" },
+        { id: 2, name: "Identify the type of noun" },
         { id: 3, name: "Noun Puzzle" },
       ],
     },
