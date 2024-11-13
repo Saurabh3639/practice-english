@@ -100,7 +100,7 @@ export default function GamePage({ params }) {
           <NounPuzzle
             category={category}
             gameName={game.replace(/-/g, " ")}
-            totalQue={10}
+            totalQue={5}
           />
         ) : game.replace(/-/g, " ") ==
           "fill in the blank with reflexive pronoun" ? (
