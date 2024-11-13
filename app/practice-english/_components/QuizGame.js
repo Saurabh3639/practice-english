@@ -8,6 +8,7 @@ import { AiFillSmile } from "react-icons/ai";
 import { GoQuestion } from "react-icons/go";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import Loader from "@/utility/Loader";
+import { usePathname, useRouter } from "next/navigation";
 
 function parseSentenceWithBold(text) {
   const parts = text.split(/(\*\*.*?\*\*)/g); // Split by ** markers
@@ -503,6 +504,28 @@ export function RearrangeSentence({
       >
         Submit
       </button>
+    </div>
+  );
+}
+
+export function GameCompletedMsg({ message }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const basePath = pathname.split("/").slice(0, 3).join("/");
+  return (
+    <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-700 bg-opacity-50 z-50">
+      <div className="bg-white p-6 rounded-md h-[50vh] min-w-[20vw] overflow-scroll scrollbar-hide">
+        <div className="flex flex-col items-center justify-evenly h-full">
+          <AiFillSmile className="text-9xl text-[#F9D65C] py-2" />
+          <p>{message}</p>
+          <button
+            className="px-4 py-2 my-2 bg-primary text-white text-base font-medium rounded-lg"
+            onClick={() => router.push(basePath)}
+          >
+            Done
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
