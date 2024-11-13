@@ -89,14 +89,13 @@ export default function NounPuzzle({ category, gameName, totalQue }) {
           <button onClick={onGenerate}>Generate</button>
         </div>
         <div className="w-[50%] flex flex-col items-center">
-          {/* {nouns && nouns?.length > 0 && ( */}
-          {/* {nouns && ( */}
+          {nouns && nouns?.length > 0 && (
             <WordPuzzle
               // words={nouns}
               words={["apple", "tree", "house", "water", "flower"]}
               setFoundWords={setFoundWords}
             />
-          {/* )} */}
+          )}
         </div>
       </div>
 
