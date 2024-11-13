@@ -249,6 +249,12 @@ export function ResultView({ result, userResp, viewAnswers, setViewAnswers }) {
                         </strong>
                       )}
                     </p>
+                    {cval.words && (
+                      <AnswerSection
+                        title="Words"
+                        content={cval.words.join(" / ")}
+                      />
+                    )}
                     {cval.options && (
                       <AnswerSection
                         title="Options"
@@ -449,5 +455,54 @@ export function InfoSection({ loading, info, onClick }) {
         </button>
       </div>
     </>
+  );
+}
+
+export function RearrangeSentence({
+  index,
+  data,
+  currentQuestion,
+  userInput,
+  setUserInput,
+  handleSubmit,
+}) {
+  return (
+    <div className="flex flex-col gap-8 text-center">
+      <div className="bg-[#FFFDFA] w-[50vw] px-3 py-4 border shadow-md rounded-lg">
+        <h3 className="font-normal text-lg flex items-center justify-between mb-4">
+          <span className="text-xl">
+            Q {index + 1}
+            <span className="text-sm">/{data?.length}</span>
+            &nbsp;&nbsp;
+            <span className="text-lg">{currentQuestion?.question}</span>
+          </span>
+        </h3>
+        {currentQuestion?.words.map((word, i) => (
+          <div className="my-2 inline-flex items-center" key={i}>
+            <span className="text-[#6A6A6A] rounded-lg border border-[#FFA6AA] py-1 px-4 mx-1">
+              {word}
+            </span>
+            {i < currentQuestion?.words.length - 1 && (
+              <span className="text-[#6A6A6A] text-2xl">{" / "}</span>
+            )}
+          </div>
+        ))}
+      </div>
+      <input
+        type="text"
+        name=""
+        id=""
+        value={userInput}
+        placeholder="Type the sentence here"
+        className="border-b-2 border-[#514F4F] focus:outline-none w-[50vw] text-lg font-normal"
+        onChange={(e) => setUserInput(e.target.value)}
+      />
+      <button
+        onClick={handleSubmit}
+        className="rounded-lg py-2 px-10 text-center bg-primary text-white w-fit"
+      >
+        Submit
+      </button>
+    </div>
   );
 }
